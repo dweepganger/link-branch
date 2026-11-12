@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="page-title">Linktree Saya</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
+</head>
+<body class="min-h-screen text-slate-100 flex flex-col items-center justify-center p-4">
+  <div class="w-full max-w-md mx-auto text-center space-y-6">
+    <div class="space-y-3">
+      <img id="profile-img" src="" alt="Profile" class="w-24 h-24 rounded-full mx-auto border-4 border-indigo-500 shadow-xl object-cover">
+      <h1 id="profile-name" class="text-2xl font-bold tracking-tight">Memuat...</h1>
+      <p id="profile-bio" class="text-slate-400 text-sm">Memuat...</p>
+    </div>
+    <div id="link-container" class="space-y-3 w-full">
+      <div class="text-slate-400 text-sm py-4">Memuat tautan...</div>
+    </div>
+    <footer class="text-xs text-slate-500 pt-6">Powered by Google Sheets & Vercel</footer>
+  </div>
+
+  <script>
+    // Ganti URL di bawah dengan Web App URL dari Apps Script Anda
+    const API_URL = "URL_WEB_APP_ANDA_DISINI";
+
+    window.addEventListener('load', function() {
+      fetch(API_URL)
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('profile-img').src = data.profile.photo;
+          document.getElementById('profile-name').innerText = data.profile.name;
+          document.getElementById('profile-bio').innerText = data.profile.bio;
+          document.getElementById('page-title').innerText = data.profile.name + ' - Linktree';
+
+          const container = document.getElementById('link-container');
+          container.innerHTML = '';
+
+          if (data.links.length === 0) {
+            container.innerHTML = '<div class="text-slate-400 text-sm">Tidak ada tautan aktif.</div>';
+            return;
+          }
+
+          data.links.forEach(link => {
+            const a = document.createElement('a');
+            a.href = link.url;
+            a.target = '_blank';
+            a.className = 'flex items-center justify-between w-full p-4 bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 rounded-xl transition-all duration-300 shadow-lg hover:scale-[1.02] group';
+            a.innerHTML = `
+              <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-lg bg-indigo-600/20 text-indigo-400 flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                  <i class="fa-solid ${link.icon}"></i>
+                </div>
+                <span class="font-medium text-slate-200">${link.title}</span>
+              </div>
+              <i class="fa-solid fa-arrow-right text-slate-500 group-hover:text-slate-300 text-sm transition-colors"></i>
+            `;
+            container.appendChild(a);
+          });
+        })
+        .catch(error => {
+          document.getElementById('link-container').innerHTML = '<div class="text-rose-400 text-sm">Gagal memuat data.</div>';
+          console.error(error);
+        });
+    });
+  </script>
+</body>
+</html>
